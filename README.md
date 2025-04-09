@@ -1,14 +1,16 @@
 # NestJS Logger Module
 
-A custom NestJS module for easy logging setup with HTTP request/response logging middleware.
+A powerful and flexible logging module for NestJS applications, featuring Winston-based logging, HTTP request/response tracking, and trace ID support.
 
 ## Features
 
-- Winston-based logger service
-- HTTP request/response logging middleware
-- Support for trace IDs via nestjs-cls
-- Configurable route exclusions for HTTP logging
-- Both synchronous and asynchronous module configuration
+- 🚀 Winston-based logger service
+- 🌐 HTTP request/response logging middleware
+- 🔍 Trace ID support via nestjs-cls
+- ⚙️ Configurable route exclusions
+- 🔧 Both sync and async configuration options
+- 📝 Structured logging format
+- 🎯 TypeScript support
 
 ## Installation
 
@@ -16,9 +18,9 @@ A custom NestJS module for easy logging setup with HTTP request/response logging
 npm install nestjs-custom-modules
 ```
 
-## Usage
+## Quick Start
 
-### Basic Usage
+### Basic Setup
 
 ```typescript
 import { Module } from '@nestjs/common';
@@ -37,7 +39,7 @@ import { LoggerModule } from 'nestjs-custom-modules';
 export class AppModule {}
 ```
 
-### Async Configuration
+### Using Environment Variables
 
 ```typescript
 import { Module } from '@nestjs/common';
@@ -62,6 +64,8 @@ import { LoggerModule } from 'nestjs-custom-modules';
 export class AppModule {}
 ```
 
+## Usage Examples
+
 ### Using the Logger Service
 
 ```typescript
@@ -69,45 +73,56 @@ import { Injectable } from '@nestjs/common';
 import { LoggerService } from 'nestjs-custom-modules';
 
 @Injectable()
-export class YourService {
+export class UserService {
   constructor(private readonly logger: LoggerService) {}
 
-  doSomething() {
-    this.logger.log('YourService', 'doSomething', 'start', { someData: 'value' });
+  async createUser(userData: any) {
+    this.logger.log('UserService', 'createUser', 'start', { userData });
     
-    // Your business logic here
+    // Your user creation logic here
     
-    this.logger.log('YourService', 'doSomething', 'end', { result: 'success' });
+    this.logger.log('UserService', 'createUser', 'end', { userId: 123 });
   }
 }
 ```
-
-## HTTP Logging
-
-The HTTP logging middleware automatically logs:
-
-- Request details (method, URL, IP, user agent)
-- Response details (status code, response time)
-
-Each HTTP request generates two log entries:
-1. When the request starts
-2. When the response is sent
 
 ## Configuration Options
 
 ### LoggerModuleOptions
 
-| Option | Type | Description |
-|--------|------|-------------|
-| httpLogger | HttpLoggerOptions | Configuration for HTTP logging middleware |
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| httpLogger | HttpLoggerOptions | No | Configuration for HTTP logging middleware |
 
 ### HttpLoggerOptions
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| enabled | boolean | false | Enable HTTP logging middleware |
-| exclude | string[] | [] | Routes to exclude from HTTP logging (supports wildcards) |
+| enabled | boolean | false | Enable/disable HTTP logging middleware |
+| exclude | string[] | [] | Array of routes to exclude from logging (supports wildcards) |
+
+## HTTP Logging
+
+The HTTP logging middleware automatically captures:
+
+- Request details (method, URL, headers, IP, user agent)
+- Response details (status code, response time)
+- Trace ID for request tracking
+- Request/response body (configurable)
+
+Each HTTP request generates two log entries:
+1. When the request is received
+2. When the response is sent
+
+## Requirements
+
+- Node.js >= 18
+- NestJS >= 11.0.0
 
 ## License
 
 ISC
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
