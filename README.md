@@ -18,6 +18,11 @@ A powerful and flexible logging module for NestJS applications, featuring Winsto
 npm install nestjs-custom-modules
 ```
 
+## Requirements
+
+- Node.js >= 20
+- NestJS >= 11.0.0
+
 ## Quick Start
 
 ### Basic Setup
@@ -86,6 +91,86 @@ export class UserService {
 }
 ```
 
+### Using the Log Decorators
+
+#### Method-level Logging
+The `@Log()` decorator provides automatic method logging for individual methods:
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { Log } from 'nestjs-custom-modules';
+
+@Injectable()
+export class UserService {
+  @Log()
+  async createUser(userData: any) {
+    return { userId: 123 };
+  }
+}
+```
+
+#### Class-level Logging
+The `@LogAll()` decorator automatically logs all methods in a class:
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { LogAll } from 'nestjs-custom-modules';
+
+@Injectable()
+@LogAll()
+export class UserService {
+  async createUser(userData: any) {
+    return { userId: 123 };
+  }
+
+  getUserProfile(userId: string) {
+    return { id: userId, name: 'John Doe' };
+  }
+  
+  updateUser(userId: string, data: any) {
+    // All methods are automatically logged
+    return { success: true };
+  }
+}
+```
+
+Both decorators will automatically:
+- Log method entry with arguments
+- Log method exit with result and execution duration
+- Log any errors that occur during execution
+- Mask sensitive data in logs using the built-in masking utility
+
+Example log output:
+```json
+// Method start
+{
+  "level": "info",
+  "resource": "UserService",
+  "functionName": "createUser",
+  "action": "start",
+  "message": "UserService-createUser-start",
+  "payload": {
+    "args": [{"name": "John Doe", "email": "john@example.com"}]
+  },
+  "traceId": "abc-123"
+}
+
+// Method end
+{
+  "level": "info",
+  "resource": "UserService",
+  "functionName": "createUser",
+  "action": "end",
+  "message": "UserService-createUser-end",
+  "payload": {
+    "args": [{"name": "John Doe", "email": "john@example.com"}],
+    "result": {"userId": 123},
+    "executeDuration": 45
+  },
+  "traceId": "abc-123"
+}
+```
+
 ## Configuration Options
 
 ### LoggerModuleOptions
@@ -114,10 +199,14 @@ Each HTTP request generates two log entries:
 1. When the request is received
 2. When the response is sent
 
-## Requirements
+## Dependencies
 
-- Node.js >= 18
-- NestJS >= 11.0.0
+- winston: ^3.17.0
+- nestjs-cls: ^5.4.2
+- dayjs: ^1.11.13
+- uuid: ^11.1.0
+- circular-json: ^0.5.9
+- ramda: ^0.30.1
 
 ## License
 

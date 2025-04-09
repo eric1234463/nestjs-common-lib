@@ -12,3 +12,6 @@ export * from './constants/module-options.constant';
 
 // Export middlewares
 export * from './middlewares/http-logger.middleware';
+
+
+export * from './decorators'
