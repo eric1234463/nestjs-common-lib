@@ -15,3 +15,5 @@ export * from './middlewares/http-logger.middleware';
 
 
 export * from './decorators'
+
+export * from './classes'

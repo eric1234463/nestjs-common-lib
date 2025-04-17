@@ -9,6 +9,7 @@
   "author": "Eric Kwong",
   "license": "ISC",
   "dependencies": {
+    "@nestjs/bullmq": "^11.0.2",
     "@nestjs/common": "^11.0.13",
     "@nestjs/testing": "^11.0.13",
     "circular-json": "^0.5.9",

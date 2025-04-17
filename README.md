@@ -1,16 +1,17 @@
 # NestJS Logger Module
 
-A powerful and flexible logging module for NestJS applications, featuring Winston-based logging, HTTP request/response tracking, and trace ID support.
+A powerful and flexible logging module for NestJS applications, featuring Winston-based logging, HTTP request/response tracking, trace ID support, and BullMQ worker logging.
 
 ## Features
 
-- 🚀 Winston-based logger service
+- 🚀 Winston-based logger service with structured logging
 - 🌐 HTTP request/response logging middleware
 - 🔍 Trace ID support via nestjs-cls
 - ⚙️ Configurable route exclusions
 - 🔧 Both sync and async configuration options
-- 📝 Structured logging format
+- 📝 Method and class-level logging decorators
 - 🎯 TypeScript support
+- 🔄 BullMQ worker logging support
 
 ## Installation
 
@@ -94,8 +95,6 @@ export class UserService {
 ### Using the Log Decorators
 
 #### Method-level Logging
-The `@Log()` decorator provides automatic method logging for individual methods:
-
 ```typescript
 import { Injectable } from '@nestjs/common';
 import { Log } from 'nestjs-custom-modules';
@@ -110,8 +109,6 @@ export class UserService {
 ```
 
 #### Class-level Logging
-The `@LogAll()` decorator automatically logs all methods in a class:
-
 ```typescript
 import { Injectable } from '@nestjs/common';
 import { LogAll } from 'nestjs-custom-modules';
@@ -123,51 +120,24 @@ export class UserService {
     return { userId: 123 };
   }
 
-  getUserProfile(userId: string) {
+  async getUserProfile(userId: string) {
     return { id: userId, name: 'John Doe' };
-  }
-  
-  updateUser(userId: string, data: any) {
-    // All methods are automatically logged
-    return { success: true };
   }
 }
 ```
 
-Both decorators will automatically:
-- Log method entry with arguments
-- Log method exit with result and execution duration
-- Log any errors that occur during execution
-- Mask sensitive data in logs using the built-in masking utility
+### BullMQ Worker Logging
 
-Example log output:
-```json
-// Method start
-{
-  "level": "info",
-  "resource": "UserService",
-  "functionName": "createUser",
-  "action": "start",
-  "message": "UserService-createUser-start",
-  "payload": {
-    "args": [{"name": "John Doe", "email": "john@example.com"}]
-  },
-  "traceId": "abc-123"
-}
+```typescript
+import { Processor } from '@nestjs/bullmq';
+import { SuperWorkerHost } from 'nestjs-custom-modules';
 
-// Method end
-{
-  "level": "info",
-  "resource": "UserService",
-  "functionName": "createUser",
-  "action": "end",
-  "message": "UserService-createUser-end",
-  "payload": {
-    "args": [{"name": "John Doe", "email": "john@example.com"}],
-    "result": {"userId": 123},
-    "executeDuration": 45
-  },
-  "traceId": "abc-123"
+@Processor('my-queue')
+export class MyQueueProcessor extends SuperWorkerHost {
+  async process(job: Job) {
+    // Your job processing logic here
+    return { processed: true };
+  }
 }
 ```
 
@@ -186,18 +156,23 @@ Example log output:
 | enabled | boolean | false | Enable/disable HTTP logging middleware |
 | exclude | string[] | [] | Array of routes to exclude from logging (supports wildcards) |
 
-## HTTP Logging
+## Log Output Format
 
-The HTTP logging middleware automatically captures:
+All logs are output in JSON format with the following structure:
 
-- Request details (method, URL, headers, IP, user agent)
-- Response details (status code, response time)
-- Trace ID for request tracking
-- Request/response body (configurable)
-
-Each HTTP request generates two log entries:
-1. When the request is received
-2. When the response is sent
+```json
+{
+  "level": "info",
+  "resource": "ServiceName",
+  "functionName": "methodName",
+  "action": "start|end|error",
+  "message": "ServiceName-methodName-action",
+  "payload": {
+    // Additional context data
+  },
+  "traceId": "unique-trace-id"
+}
+```
 
 ## Dependencies
 
